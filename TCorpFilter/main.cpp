@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <dwmapi.h>
 #include <magnification.h>
+#include "resource1.h"
 
 #pragma comment(lib, "dwmapi.lib")
 #pragma comment(lib, "magnification.lib")
@@ -293,15 +294,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // Register window class
     const wchar_t* className = L"ScreenFilterApp";
-    WNDCLASS wc = { 0 };
+    WNDCLASSEX wc = { 0 };
+    wc.cbSize = sizeof(WNDCLASSEX);
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.lpszClassName = className;
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)); // Use T Corp logo
+    wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)); // Small icon for taskbar
 
-    if (!RegisterClass(&wc)) {
+    if (!RegisterClassEx(&wc)) {
         MessageBox(NULL, L"Failed to register window class!", L"Error", MB_OK | MB_ICONERROR);
         return 1;
     }
@@ -309,7 +312,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Create window
     HWND hwnd = CreateWindow(
         className,
-        L"T Corp Filter - Epilepsy Protection",
+        L"T Corp Filter",
         WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX, // Fixed size window
         CW_USEDEFAULT, CW_USEDEFAULT,
         280, 320,

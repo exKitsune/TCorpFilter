@@ -122,3 +122,7 @@ vcpkg.applocal.log
 .Trashes
 ehthumbs.db
 Thumbs.db 
+
+# My files
+
+generate_t_image.py
