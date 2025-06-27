@@ -106,7 +106,26 @@ namespace TCorpFilter
 
 			// Set window size and icon
 			var appWindow = this.AppWindow;
-			appWindow.SetIcon("Assets/favicon.ico");
+			
+			// Try to set the icon using the full path
+			try
+			{
+				var iconPath = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "favicon.ico");
+				if (System.IO.File.Exists(iconPath))
+				{
+					appWindow.SetIcon(iconPath);
+				}
+				else
+				{
+					// Fallback to relative path
+					appWindow.SetIcon("Assets/favicon.ico");
+				}
+			}
+			catch
+			{
+				// If icon setting fails, continue without it
+			}
+			
 			appWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 800, Height = 700 });
             
             // Center the window on screen
@@ -121,11 +140,32 @@ namespace TCorpFilter
                 rootGrid.DataContext = this;
             }
             
+            // Set image sources programmatically for reliability
+            SetImageSources();
+            
             // Initialize magnification API
             InitializeMagnification();
             
             // Subscribe to Closed event
             this.Closed += MainWindow_Closed;
+        }
+
+        private void SetImageSources()
+        {
+            try
+            {
+                // Set app icon using reliable path resolution
+                var iconPath = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "favicon.scale-200.png");
+                if (System.IO.File.Exists(iconPath))
+                {
+                    AppIcon.Source = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri(iconPath));
+                }
+            }
+            catch (Exception ex)
+            {
+                // If image loading fails, continue without it
+                System.Diagnostics.Debug.WriteLine($"Failed to load app icon: {ex.Message}");
+            }
         }
 
         private async void InitializeMagnification()

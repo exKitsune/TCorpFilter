@@ -11,6 +11,10 @@
     <PackageLogoSource>C:\Users\fruit\Documents\MEGA\Coding\TCorpFilter\t_corp_filter_logo_clean.png</PackageLogoSource>
     <BadgeLogoSource>C:\Users\fruit\Documents\MEGA\Coding\TCorpFilter\t_corp_filter_logo_clean.png</BadgeLogoSource>
     <_LastSelectedProfileId>C:\Users\fruit\Documents\MEGA\Coding\TCorpFilter\TCorpFilter\Properties\PublishProfiles\win-x64.pubxml</_LastSelectedProfileId>
+    <ActiveDebugProfile>TCorpFilter (Unpackaged)</ActiveDebugProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <ItemGroup>
     <None Update="App.xaml">
