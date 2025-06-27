@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>TCorpFilter</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKBootstrapAutoInitialize>true</WindowsAppSDKBootstrapAutoInitialize>
+    
+    <!-- Single File Publishing -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <SelfContained>true</SelfContained>
+    <PublishProfile>Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfile>
+    <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+
+  <!--
+    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+    Tools extension to be activated for this project even if the Windows App SDK Nuget
+    package has not yet been restored.
+  -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.250402" />
+    <PackageReference Include="CommunityToolkit.WinUI.Helpers" Version="8.2.250402" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Markdown" Version="7.1.2" />
+  </ItemGroup>
+
+  <!--
+    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
+    Explorer "Package and Publish" context menu entry to be enabled for this project even if
+    the Windows App SDK Nuget package has not yet been restored.
+  -->
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+
+  <Target Name="_RemoveFrameworkReferences" BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
+	  <ItemGroup>
+		  <FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="$([System.String]::Copy('%(FrameworkSdkReference.SDKName)').StartsWith('Microsoft.WindowsAppRuntime.'))" />
+	  </ItemGroup>
+  </Target>
+</Project>
