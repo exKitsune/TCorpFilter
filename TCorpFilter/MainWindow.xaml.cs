@@ -339,10 +339,12 @@ namespace TCorpFilter
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
-            BrightnessSlider.Value = 100;
-            ContrastSlider.Value = 100;
-            SaturationSlider.Value = 100;
-            ApplyColorEffect();
+            // Apply default effect (100% for all), but do not change slider positions
+            var effect = CreateColorTransformMatrix(1.0f, 1.0f, 1.0f);
+            if (isInitialized)
+            {
+                MagSetFullscreenColorEffect(ref effect);
+            }
         }
 
         private void MainWindow_Closed(object sender, WindowEventArgs e)

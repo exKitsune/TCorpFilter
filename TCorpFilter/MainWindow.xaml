@@ -106,7 +106,7 @@
                             Click="ApplyButton_Click"
                             Style="{StaticResource AccentButtonStyle}"/>
                     <Button x:Name="ResetButton" 
-                            Content="Reset to Default (100%)" 
+                            Content="Reset to Default" 
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Center"
                             Click="ResetButton_Click"/>
