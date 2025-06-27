@@ -284,26 +284,14 @@ namespace TCorpFilter
                 transform = new float[25]
             };
 
-            // Luminance weights for proper grayscale conversion
-            float lumR = 0.33f; // 0.299f;
-            float lumG = 0.33f; // 0.587f;
-            float lumB = 0.33f; // 0.114f;
-
-            // Create saturation matrix
-            float sr = lumR * (1.0f - saturation);
-            float sg = lumG * (1.0f - saturation);
-            float sb = lumB * (1.0f - saturation);
 
             float[,] satMatrix = {
-                {sr + saturation, sg,              sb             },
-                {sr,              sg + saturation, sb             },
-                {sr,              sg,              sb + saturation}
+                 { (1f - saturation) * 0.2126f + saturation, (1f - saturation) * 0.2126f,              (1f - saturation) * 0.2126f },
+                 { (1f - saturation) * 0.7152f,              (1f - saturation) * 0.7152f + saturation, (1f - saturation) * 0.7152f },
+                 { (1f - saturation) * 0.0722f,              (1f - saturation) * 0.0722f,              (1f - saturation) * 0.0722f + saturation }
             };
 
-            // this formula is normally for ranges of -1, 1
-            // so we need to invert our contrast
-            contrast = -1 + contrast;
-            float contrastFactor = (1.015f * (contrast + 1.0f)) / (1.0f * (1.015f - contrast));
+            float contrastOffset = (1 - contrast) * 0.5f;
 
             // Fill the MAGCOLOREFFECT matrix (5x5)
             // Apply saturation, then contrast, then brightness
@@ -311,7 +299,7 @@ namespace TCorpFilter
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    effect.transform[i * 5 + j] = (((satMatrix[i, j] - 0.5f) * contrastFactor) + 0.5f) * brightness;
+                    effect.transform[i * 5 + j] = satMatrix[i, j] * contrast * brightness;
                 }
             }
 
@@ -319,10 +307,10 @@ namespace TCorpFilter
             effect.transform[3 * 5 + 3] = 1.0f;
             effect.transform[3 * 5 + 4] = 0.0f;
 
-            // Row 4 (required by API) - identity
-            effect.transform[4 * 5 + 0] = 0.0f;
-            effect.transform[4 * 5 + 1] = 0.0f;
-            effect.transform[4 * 5 + 2] = 0.0f;
+            // Row 4 addition
+			effect.transform[4 * 5 + 0] = contrastOffset;
+            effect.transform[4 * 5 + 1] = contrastOffset;
+            effect.transform[4 * 5 + 2] = contrastOffset;
             effect.transform[4 * 5 + 3] = 0.0f;
             effect.transform[4 * 5 + 4] = 1.0f;
 
