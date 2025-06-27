@@ -300,8 +300,10 @@ namespace TCorpFilter
                 {sr,              sg,              sb + saturation}
             };
 
-            // Calculate contrast offset (shift to apply contrast around 0.5 gray)
-            float contrastOffset = 0.5f * (1.0f - contrast);
+            // this formula is normally for ranges of -1, 1
+            // so we need to invert our contrast
+            contrast = -1 + contrast;
+            float contrastFactor = (1.015f * (contrast + 1.0f)) / (1.0f * (1.015f - contrast));
 
             // Fill the MAGCOLOREFFECT matrix (5x5)
             // Apply saturation, then contrast, then brightness
@@ -309,10 +311,8 @@ namespace TCorpFilter
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    effect.transform[i * 5 + j] = satMatrix[i, j] * contrast * brightness;
+                    effect.transform[i * 5 + j] = (((satMatrix[i, j] - 0.5f) * contrastFactor) + 0.5f) * brightness;
                 }
-                // Apply contrast offset (brightness is multiplicative, not additive)
-                effect.transform[i * 5 + 4] = contrastOffset;
             }
 
             // Alpha channel - keep unchanged
