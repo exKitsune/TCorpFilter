@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TCorpFilter (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "TCorpFilter (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
