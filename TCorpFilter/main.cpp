@@ -89,20 +89,10 @@ BOOL ApplyColorTransform(float brightness, float contrast, float saturation) {
     MAGCOLOREFFECT colorEffect;
     ZeroMemory(&colorEffect, sizeof(colorEffect));
 
-    // Luminance weights for proper grayscale conversion
-    float lumR = .33f; // 0.299f;
-    float lumG = .33f; // 0.587f;
-    float lumB = .33f; // 0.114f;
-
-    // Create saturation matrix
-    float sr = lumR * (1.0f - saturation);
-    float sg = lumG * (1.0f - saturation);
-    float sb = lumB * (1.0f - saturation);
-
     float satMatrix[3][3] = {
-        {sr + saturation, sg,              sb             },
-        {sr,              sg + saturation, sb             },
-        {sr,              sg,              sb + saturation}
+            { (1.0f - saturation) * 0.2126f + saturation, (1.0f - saturation) * 0.2126f,              (1.0f - saturation) * 0.2126f },
+            { (1.0f - saturation) * 0.7152f,              (1.0f - saturation) * 0.7152f + saturation, (1.0f - saturation) * 0.7152f },
+            { (1.0f - saturation) * 0.0722f,              (1.0f - saturation) * 0.0722f,              (1.0f - saturation) * 0.0722f + saturation }
     };
 
     // Calculate contrast offset (shift to apply contrast around 0.5 gray)
@@ -122,12 +112,13 @@ BOOL ApplyColorTransform(float brightness, float contrast, float saturation) {
     colorEffect.transform[3][3] = 1.0f;
     colorEffect.transform[3][4] = 0.0f;
 
-    // Row 4 (required by API) - identity
-    colorEffect.transform[4][0] = 0.0f;
-    colorEffect.transform[4][1] = 0.0f;
-    colorEffect.transform[4][2] = 0.0f;
+    // Row 4 addition   
+    colorEffect.transform[4][0] = contrastOffset;
+    colorEffect.transform[4][1] = contrastOffset;
+    colorEffect.transform[4][2] = contrastOffset;
     colorEffect.transform[4][3] = 0.0f;
     colorEffect.transform[4][4] = 1.0f;
+
 
     // Apply the color effect to the entire screen
     return MagSetFullscreenColorEffect(&colorEffect);
@@ -253,7 +244,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             float contrast = contrastValue / 100.0f;
 
             if (ApplyFilter(brightness, contrast)) {
-                MessageBox(hwnd, L"Color filter applied successfully!", L"Success", MB_OK | MB_ICONINFORMATION);
+                // MessageBox(hwnd, L"Color filter applied successfully!", L"Success", MB_OK | MB_ICONINFORMATION);
             }
             else {
                 MessageBox(hwnd, L"Failed to apply color filter!\n\nTry restarting the application.", L"Error", MB_OK | MB_ICONERROR);
@@ -262,7 +253,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
         case ID_RESTORE_BUTTON:
             RestoreOriginal();
-            MessageBox(hwnd, L"Original settings restored!", L"Success", MB_OK | MB_ICONINFORMATION);
+            // MessageBox(hwnd, L"Original settings restored!", L"Success", MB_OK | MB_ICONINFORMATION);
             break;
         }
         break;
